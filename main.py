@@ -28,7 +28,6 @@ market_segment_type_Corporate =  st.selectbox("Market Segment Type Corporate :" 
 market_segment_type_Offline = st.selectbox("Market Segment Type Offline :" , ["True","False"] )
 market_segment_type_Online  = st.selectbox("Market Segment Type Online :" , ["True","False"] )
 
-
 if st.button("Predict"):
     # Construct DataFrame (must match training format!)
     input_data = pd.DataFrame([{
@@ -53,22 +52,24 @@ if st.button("Predict"):
          "market segment type_Online" :market_segment_type_Online
 
     }])
+    bool_cols = input_data.select_dtypes(include=['bool']).columns
+    input_data[bool_cols] = input_data[bool_cols].astype(int)
 
+    # ✅ Convert 'True'/'False' strings to 1/0
+    object_cols = input_data.select_dtypes(include='object').columns
+    for col in object_cols:
+       if set(input_data[col].unique()) <= {'True', 'False'}:
+           input_data[col] = input_data[col].map({'True': 1, 'False': 0})
+
+    # Then scale
+    input_scaled = scaler.transform(input_data)
+    prediction = model.predict(input_scaled)
+
+    result = "Canceled" if prediction[0] == 1 else "Not Canceled"
+    st.success(f"Prediction: {result}")
+else :
+    input_data = pd.DataFrame([{}])
+    pass
     # Scale and predict
-    # ✅ Convert boolean columns to integers
-bool_cols = input_data.select_dtypes(include=['bool']).columns
-input_data[bool_cols] = input_data[bool_cols].astype(int)
+    #  Convert boolean columns to integers
 
-# ✅ Convert 'True'/'False' strings to 1/0
-object_cols = input_data.select_dtypes(include='object').columns
-for col in object_cols:
-    if set(input_data[col].unique()) <= {'True', 'False'}:
-        input_data[col] = input_data[col].map({'True': 1, 'False': 0})
-
-# Then scale
-input_scaled = scaler.transform(input_data)
-input_scaled = scaler.transform(input_data)
-prediction = model.predict(input_scaled)
-
-result = "Canceled" if prediction[0] == 1 else "Not Canceled"
-st.success(f"Prediction: {result}")
