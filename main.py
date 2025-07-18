@@ -1,9 +1,11 @@
 import streamlit as st
 import pickle
 import pandas as pd
+import xgboost as xgb
 
 # Load model and scaler
-model = pickle.load(open('xgb_model.json', 'rb'))
+model = xgb.Booster()
+model.load_model('xgb_model.json')
 scaler = pickle.load(open('scaler.pkl', 'rb'))
 
 st.title("Booking Status Prediction")
@@ -63,7 +65,11 @@ if st.button("Predict"):
 
     # Then scale
     input_scaled = scaler.transform(input_data)
-    prediction = model.predict(input_scaled)
+    # prediction = model.predict(input_scaled)
+    import xgboost as xgb
+
+    dinput = xgb.DMatrix(input_scaled)
+    prediction = model.predict(dinput)
 
     result = "Canceled" if prediction[0] == 1 else "Not Canceled"
     st.success(f"Prediction: {result}")
