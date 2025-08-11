@@ -13,12 +13,17 @@ st.title("Booking Status Prediction")
 # Sample inputs — change based on your dataset
 lead_time  =  st.number_input("lead_time", min_value=0.0 , step=1.0)
 avg_price = st.number_input("avg_price", min_value=0.0 , step=1.0)
+
 # booking_status =  st.number_input("Booking Status", min_value=0.0 , step=1.0 , max_value=1.0)
+
 total_nights =  st.number_input("Total Nights", min_value=0.0 , step=1.0)
 total_member =  st.number_input("Total Member", min_value=0.0 , step=1.0)
 total_repeat =  st.number_input("Total Repeat", min_value=0.0 , step=1.0 )
-price_per_adult = st.number_input("Price Per Adult", step=1.0 , min_value=0.25)
-has_special_requests = st.number_input("Has Special Requests", min_value=0.0 , step=1.0 , max_value=1.0)
+price_per_adult = st.number_input("Price Per Adult", step=1.0)
+
+has_special_requests = st.selectbox("Has Special Requests", options = ["Yes","No"])
+
+has_special_requests = int(1) if has_special_requests == "Yes" else  int(0)
 high_price = st.number_input("High Price", min_value=0.0 , step=1.0 )
 type_of_meal_Meal_Plan_2  = st.selectbox("Type Of meal_Meal Plan 2 :" , ["True","False"] )
 room_type_Room_Type_4   = st.selectbox("room_type Room Type_4 :" , ["True","False"] )
@@ -57,7 +62,7 @@ if st.button("Predict"):
     bool_cols = input_data.select_dtypes(include=['bool']).columns
     input_data[bool_cols] = input_data[bool_cols].astype(int)
 
-    # ✅ Convert 'True'/'False' strings to 1/0
+    #  Convert 'True'/'False' strings to 1/0
     object_cols = input_data.select_dtypes(include='object').columns
     for col in object_cols:
        if set(input_data[col].unique()) <= {'True', 'False'}:
@@ -71,8 +76,8 @@ if st.button("Predict"):
     dinput = xgb.DMatrix(input_scaled)
     prediction = model.predict(dinput)
 
-    result = "Canceled" if prediction[0] == 1 else "Not Canceled"
-    st.success(f"Prediction: {result}")
+    result = " Canceled" if prediction[0] == 1 else "not Canceled"
+    st.success(f"The User has{result} his/her Booking with the Hotel")
 else :
     input_data = pd.DataFrame([{}])
     pass
