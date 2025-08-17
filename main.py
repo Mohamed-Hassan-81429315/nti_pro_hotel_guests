@@ -11,8 +11,8 @@ scaler = pickle.load(open('scaler.pkl', 'rb'))
 st.title("Booking Status Prediction")
 
 # Sample inputs — change based on your dataset
-lead_time  =  st.number_input("lead_time", min_value=0.0 , step=1.0)
-avg_price = st.number_input("avg_price", min_value=0.0 , step=1.0)
+lead_time  =  st.number_input("Lead Time", min_value=0.0 , step=1.0)
+avg_price = st.number_input(" what is the average price  that the  guest paid ?", min_value=0.0 , step=1.0)
 
 # booking_status =  st.number_input("Booking Status", min_value=0.0 , step=1.0 , max_value=1.0)
 
@@ -21,29 +21,34 @@ total_member =  st.number_input("Total Member", min_value=0.0 , step=1.0)
 total_repeat =  st.number_input("Total Repeat", min_value=0.0 , step=1.0 )
 price_per_adult = st.number_input("Price Per Adult", step=1.0)
 
-has_special_requests = st.selectbox("Has Special Requests", options = ["Yes","No"])
+has_special_requests = st.selectbox("Does the guest has special requests ?", options = ["Yes","No"])
 
 has_special_requests = int(1) if has_special_requests == "Yes" else  int(0)
-high_price = st.number_input("High Price", min_value=0.0 , step=1.0 )
+high_price = st.number_input("what is the high price ?", min_value=0.0 , step=1.0 )
+
 type_of_meal_Meal_Plan_2  = st.selectbox("Type Of meal_Meal Plan 2 :" , ["True","False"] )
-room_type_Room_Type_4   = st.selectbox("room_type Room Type_4 :" , ["True","False"] )
-room_type_Room_Type_5    = st.selectbox("room_type Room Type 5 :" , ["True","False"] )
-room_type_Room_Type_6  = st.selectbox("room_type Room Type 6 :" , ["True","False"] )
-room_type_Room_Type_7  = st.selectbox("room_type Room Type 7 :" , ["True","False"] )
-market_segment_type_Complementary = st.selectbox("market Segment Type Complementary :" , ["True","False"] )
-market_segment_type_Corporate =  st.selectbox("Market Segment Type Corporate :" , ["True","False"] )
-market_segment_type_Offline = st.selectbox("Market Segment Type Offline :" , ["True","False"] )
-market_segment_type_Online  = st.selectbox("Market Segment Type Online :" , ["True","False"] )
+
+RoomType = st.selectbox("What is the Type of the used room ? ex:- Room Type 4" ,options= ["No Type" ," Type 4 " ," Type 5 " , " Type 6 " , " Type 7 "] )
+
+room_type_Room_Type_4  =  True if RoomType==" Type 4 " else False
+room_type_Room_Type_5  =  True if RoomType==" Type 5 "  else False
+room_type_Room_Type_6  =  True if RoomType==" Type 6 " else False
+room_type_Room_Type_7  =  True if RoomType==" Type 7 " else False
+
+Market_Segment =  st.selectbox(" What is the market Segment Type ? " , ["No Type" ,"Complementary","Corporate" , "Offline" , "Online"] )
+
+market_segment_type_Complementary =  True if Market_Segment == "Complementary" else False
+market_segment_type_Corporate = True if Market_Segment == "Corporate" else False
+market_segment_type_Offline  = True if Market_Segment == "Offline" else False
+market_segment_type_Online   = True if Market_Segment == "Online" else False
 
 if st.button("Predict"):
     # Construct DataFrame (must match training format!)
     input_data = pd.DataFrame([{
-        # "average price": avg_price,
          "lead time" :  lead_time ,
          "average price" : avg_price ,
-        #  "Booking Status" : booking_status ,
-         "total nights":total_nights ,
-        "total_member" :total_member ,
+          "total nights":total_nights ,
+         "total_member" :total_member ,
          "total_repeat" :total_repeat ,
          "price_per_adult" : price_per_adult ,
          "has_special_requests" : has_special_requests ,
@@ -65,7 +70,7 @@ if st.button("Predict"):
     #  Convert 'True'/'False' strings to 1/0
     object_cols = input_data.select_dtypes(include='object').columns
     for col in object_cols:
-       if set(input_data[col].unique()) <= {'True', 'False'}:
+       if set(input_data[col].unique()).issubset({'True', 'False'}):
            input_data[col] = input_data[col].map({'True': 1, 'False': 0})
 
     # Then scale
@@ -81,6 +86,5 @@ if st.button("Predict"):
 else :
     input_data = pd.DataFrame([{}])
     pass
-    # Scale and predict
-    #  Convert boolean columns to integers
+ 
 
